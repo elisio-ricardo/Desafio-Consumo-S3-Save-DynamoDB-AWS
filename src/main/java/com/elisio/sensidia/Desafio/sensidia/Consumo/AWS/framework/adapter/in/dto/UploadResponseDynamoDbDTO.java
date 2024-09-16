@@ -31,6 +31,9 @@ public class UploadResponseDynamoDbDTO {
     @DynamoDBAttribute
     private Long processingResult;
 
+    @DynamoDBAttribute
+    private String message;
+
 
     @DynamoDBAttribute
     @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.S)

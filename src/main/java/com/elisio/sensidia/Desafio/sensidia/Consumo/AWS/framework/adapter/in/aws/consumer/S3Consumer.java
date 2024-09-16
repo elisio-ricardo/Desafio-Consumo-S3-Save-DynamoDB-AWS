@@ -42,6 +42,7 @@ public class S3Consumer {
 
 
             processingResult.setQtdLinhas(countLines);
+            processingResult.setMessage("Sucesso ao processar arquivo");
             processingResult.setStatus(ResultEnum.CONCLUIDO);
 
             log.info("Download e processamento do file no S3 concluido");
@@ -49,6 +50,7 @@ public class S3Consumer {
 
         } catch (Exception e) {
             log.error("Erro ao tentar fazer download no s3: " + e.getMessage());
+            processingResult.setMessage("Erro ao tentar fazer download no s3: " + e.getMessage());
             processingResult.setStatus(ResultEnum.ERROR);
         }
         return processingResult;

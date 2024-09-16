@@ -17,4 +17,8 @@ public class ProcessingResult {
 
     @NotNull(message = "O status não pode ser null")
     private Enum status;
+
+
+    @NotNull
+    private String message;
 }

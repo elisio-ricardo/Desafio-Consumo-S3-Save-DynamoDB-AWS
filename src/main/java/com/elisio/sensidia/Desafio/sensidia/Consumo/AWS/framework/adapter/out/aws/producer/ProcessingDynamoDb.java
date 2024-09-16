@@ -22,6 +22,7 @@ public class ProcessingDynamoDb {
 
         try {
             var resultDetail = new UploadResponseDynamoDbDTO();
+            resultDetail.setMessage(processingResult.getMessage());
             resultDetail.setUserId(responseDTO.getUser().getUserId());
             resultDetail.setFileName(responseDTO.getFile().getFileName());
             resultDetail.setFileSize(responseDTO.getFile().getFileSize());

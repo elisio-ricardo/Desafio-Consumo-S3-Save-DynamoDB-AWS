@@ -38,7 +38,6 @@ public class ProcessingMessageSQS {
             var processingResult = getProcessingResult(uploadResponseDTO);
 
             sendResultMensageDynamoDB(uploadResponseDTO, processingResult);
-
         } catch (JsonProcessingException e) {
             log.error("Erro ao transformar a mensagem do SQS");
             throw new RuntimeException("Erro ao transformar a mensagem do SQS" + e.getMessage());
