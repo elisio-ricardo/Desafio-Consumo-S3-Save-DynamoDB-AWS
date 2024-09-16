@@ -1,0 +1,28 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: Desafio-sensidia-Consumo-AWS
+
+  cloud:
+    aws:
+      credentials:
+        access-key: x
+        secret-key: x
+      region:
+        static: x
+      endpoint: x
+
+      sqs:
+        queue-name: x
+      s3:
+        bucket-name: x
+      sns:
+        topic:
+          book-topic:
+            arn: x
+
+logging:
+  level:
+    org.springframework.retry: DEBUG
