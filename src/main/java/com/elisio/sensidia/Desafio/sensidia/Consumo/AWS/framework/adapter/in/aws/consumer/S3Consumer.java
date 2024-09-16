@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.elisio.sensidia.Desafio.sensidia.Consumo.AWS.domain.entities.ProcessingResult;
 import com.elisio.sensidia.Desafio.sensidia.Consumo.AWS.domain.enums.ResultEnum;
-import com.elisio.sensidia.Desafio.sensidia.Consumo.AWS.framework.exception.AwsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,8 @@ public class S3Consumer {
         this.s3Client = s3Client;
     }
 
-    public ProcessingResult downloadFileS3(String key)  {
+    public ProcessingResult downloadFileS3(String key) {
+        var processingResult = new ProcessingResult();
 
         try {
             log.info("Iniciando Download do file no S3");
@@ -40,7 +40,7 @@ public class S3Consumer {
             reader.close();
             s3Object.close();
 
-            var processingResult = new ProcessingResult();
+
             processingResult.setQtdLinhas(countLines);
             processingResult.setStatus(ResultEnum.CONCLUIDO);
 
@@ -48,11 +48,10 @@ public class S3Consumer {
             return processingResult;
 
         } catch (Exception e) {
-
-            //Tenho que alterar aqui
             log.error("Erro ao tentar fazer download no s3: " + e.getMessage());
-            throw new AwsException("Error to Download file to S3: " + e.getMessage());
+            processingResult.setStatus(ResultEnum.ERROR);
         }
+        return processingResult;
     }
 
     private static Long countLines(BufferedReader reader) throws IOException {
@@ -63,7 +62,6 @@ public class S3Consumer {
             lineCount++;
         }
         log.info("Número total de linhas: " + lineCount);
-
         return lineCount;
     }
 }

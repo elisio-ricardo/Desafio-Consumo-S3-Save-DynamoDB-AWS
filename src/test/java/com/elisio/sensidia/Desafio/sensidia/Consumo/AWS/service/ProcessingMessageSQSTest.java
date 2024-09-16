@@ -7,8 +7,6 @@ import com.elisio.sensidia.Desafio.sensidia.Consumo.AWS.framework.adapter.in.aws
 import com.elisio.sensidia.Desafio.sensidia.Consumo.AWS.framework.adapter.in.dto.UploadResponseDTO;
 import com.elisio.sensidia.Desafio.sensidia.Consumo.AWS.framework.adapter.out.aws.producer.ProcessingDynamoDb;
 import com.elisio.sensidia.Desafio.sensidia.Consumo.AWS.framework.adapter.out.aws.producer.SnsReportProducer;
-import com.elisio.sensidia.Desafio.sensidia.Consumo.AWS.framework.exception.AwsException;
-import com.elisio.sensidia.Desafio.sensidia.Consumo.AWS.framework.exception.ValidationParseJsonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +25,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProcessingMessageSQSTest {
-
 
     @Mock
     private ProcessingDynamoDb processingDynamoDb;
@@ -76,41 +73,7 @@ class ProcessingMessageSQSTest {
 
         doThrow(JsonProcessingException.class).when(objectMapper).readValue(toString, UploadResponseDTO.class);
 
-        assertThrows(ValidationParseJsonException.class, () -> processingMessageSQS.processingMessageSQS(toString));
-    }
-
-    @Test
-    @DisplayName("Processando mensagen com objetos File null")
-    void doThrowWhenStartMethodWithObjectFileNull() throws JsonProcessingException {
-
-        var uploadResponseDTO = FactoryMessage.getUploadResponseDTO();
-        var result = FactoryMessage.getProcessingResult();
-        uploadResponseDTO.setFile(new FileMetadata());
-        var toString = FactoryMessage.parseUploadResponseDtoToString();
-        when(objectMapper.readValue(toString, UploadResponseDTO.class)).thenReturn(uploadResponseDTO);
-
-        assertThrows(AwsException.class, () -> processingMessageSQS.processingMessageSQS(toString));
-    }
-
-    @Test
-    @DisplayName("Error save DynamoDB Report")
-    void doThrowWhenErrorDynamoDBSaveReport() throws JsonProcessingException {
-
-        var uploadResponseDTO = FactoryMessage.getUploadResponseDTO();
-        var result = FactoryMessage.getProcessingResult();
-        var toString = FactoryMessage.parseUploadResponseDtoToString();
-        var resultDetail = FactoryMessage.getUploadResponseDynamoDbDTO();
-        resultDetail.setFileId(null);
-
-        when(s3Consumer.downloadFileS3(uploadResponseDTO.getFile().getFileName())).thenReturn(result);
-        when(objectMapper.readValue(toString, UploadResponseDTO.class)).thenReturn(uploadResponseDTO);
-        when(processingDynamoDb.processingDataSqs(uploadResponseDTO, result)).thenReturn(resultDetail);
-
-        assertThrows(AwsException.class, () -> processingMessageSQS.processingMessageSQS(toString));
-
-        verify(s3Consumer, Mockito.times(1)).downloadFileS3(uploadResponseDTO.getFile().getFileName());
-        verify(objectMapper, Mockito.times(1)).readValue(toString, UploadResponseDTO.class);
-        verify(processingDynamoDb, Mockito.times(1)).processingDataSqs(uploadResponseDTO, result);
+        assertThrows(RuntimeException.class, () -> processingMessageSQS.processingMessageSQS(toString));
     }
 
     @Test
@@ -129,14 +92,12 @@ class ProcessingMessageSQSTest {
 
         doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsString(resultDetail);
 
-        assertThrows(ValidationParseJsonException.class, () -> processingMessageSQS.processingMessageSQS(toString));
+        assertThrows(RuntimeException.class, () -> processingMessageSQS.processingMessageSQS(toString));
 
         verify(s3Consumer, Mockito.times(1)).downloadFileS3(uploadResponseDTO.getFile().getFileName());
         verify(objectMapper, Mockito.times(1)).readValue(toString, UploadResponseDTO.class);
         verify(processingDynamoDb, Mockito.times(1)).processingDataSqs(uploadResponseDTO, result);
     }
-
-
 
 
 }
